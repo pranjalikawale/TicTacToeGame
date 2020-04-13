@@ -14,6 +14,7 @@ counter=1
 row=-1
 col=-1
 isvalid=1
+gameOn=1
 
 # initialize board
 function board()
@@ -160,6 +161,70 @@ function insert()
    ((counter++))
 }
 
+# check for win
+function win()
+{
+	# check row for winning condition
+   for ((rows=0;rows<$ROW;rows++))
+   do
+      if [[ ${board[$rows,0]} == ${board[$rows,1]} && ${board[$rows,1]} == ${board[$rows,2]} && (( ${board[$rows,0]} != " "   )) ]]
+      then
+         echo "Player $playing (${board[$rows,0]}) is won!!!!"
+         gameOn=0
+      fi
+   done
+
+	# check col for winning condition
+   for ((cols=0;cols<$COLUMN;cols++))
+   do
+      if [[ ${board[0,$cols]} == ${board[1,$cols]} && ${board[1,$cols]} == ${board[2,$cols]} && (( ${board[0,$cols]} != " " )) ]]
+      then
+         echo "Player $playing (${board[0,$cols]}) is won!!!!"
+         gameOn=0
+      fi
+   done
+
+	# check diagonal 1 for winning condition
+   if [[ ${board[0,0]} == ${board[1,1]} && ${board[1,1]} == ${board[2,2]} && (( ${board[0,0]} != " ")) ]]
+   then
+      echo "Player $playing (${board[0,0]}) is won!!!!"
+      gameOn=0
+   fi
+
+	# check diagonal 2 for winning condition
+   if [[ ${board[1,2]} == ${board[1,1]} && ${board[1,1]} == ${board[2,1]} && (( ${board[1,1]} != " " )) ]]
+   then
+      echo "Player $playing (${board[1,1]}) is won!!!!"
+      gameOn=0
+   fi
+}
+
+# check for tie
+function tie()
+{
+   if [[ counter -gt 10 ]]
+   then
+      echo "*******GAME TIE*******"
+      gameOn=0
+   fi
+}
+
+# switch player turn
+function switchPlayer()
+{
+   if [ $playing == $HUMAN ]
+   then
+         playing=$COMPUTER
+   else
+         playing=$HUMAN
+   fi
+   if [[ $gameOn == 1 ]]
+   then
+      echo "$playing turn:"
+   fi
+}
+
+
 # ticTacToc main function
 function ticTacToe()
 {
@@ -168,8 +233,14 @@ function ticTacToe()
 	assignSymbol
 	displaySymbol
 	playFirst
-	input
-	display
+	while [[ $gameOn -eq 1 ]]
+	do
+   	input
+   	display
+   	tie
+   	win
+   	switchPlayer
+	done
 }
 
 # invoke ticTacToe
