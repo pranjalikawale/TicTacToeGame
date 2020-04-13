@@ -152,7 +152,7 @@ function computerReadValue()
    return
 }
 
-# return corner
+# return corner block
 function corner()
 {
    if [[ "$(getRandom)" -eq 0  ]]
@@ -161,6 +161,21 @@ function corner()
    else
       echo "2"
    fi
+}
+
+# return side block
+function side()
+{
+   while true
+   do
+      row=$(getInput)
+      col=$(getInput)
+      sum=($row+$col)
+      if [[ (($sum -eq 3)) || (($sum -eq 1)) ]]
+      then
+         break
+      fi
+   done
 }
 
 # return count
