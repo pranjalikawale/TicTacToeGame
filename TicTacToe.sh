@@ -142,11 +142,11 @@ function computerReadValue()
    then
       row=$(corner)
       col=$(corner)
+   elif [ $middleCounter -lt 1 ]
+   then
+      row=1
+      col=1
 	fi
-   #elif [ $middleCounter -lt 1 ]
-   #then
-   #   row=1
-   #   col=1
    #elif [ $sideCounter -lt 4 ]
    #then
    #   side
@@ -171,14 +171,14 @@ function counters()
    if [[ (( $row -eq 0 || $row -eq 2 )) && (( $col -eq 0 && $col -eq 2 )) ]]
    then
       ((cornerCounter++))
- 	fi
+   elif [[ (( $row -eq 1)) && (($col -eq 1)) ]]
+   then
+      ((middleCounter++))
+   fi 
 	#elif [[ $sum -eq 1 || $sum -eq 3 ]]
    #then
    #   ((sideCounter++))
-   #elif [[ (( $row -eq 1)) && (($col -eq 1)) ]]
-   #then
-   #   ((middleCounter++))
-   #fi
+
 }
 # get random input for row and col for computer
 function getInput()
