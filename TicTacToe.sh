@@ -109,11 +109,16 @@ function input()
 				row="$(getInput)"
    			col="$(getInput)" 
 			else
-            playWinMove $COMPUTER
+            playWinOrBlockMove $COMPUTER 
 				if [[ $noMatch -eq 1 ]]
-            then 
-					row="$(getInput)"
-            	col="$(getInput)"
+            then
+					noMatch=0
+               playWinOrBlockMove $HUMAN
+					if [[ $noMatch -eq 1 ]]
+      	      then 
+						row="$(getInput)"
+            		col="$(getInput)"
+					fi
 				fi
 			fi
       fi
@@ -236,7 +241,7 @@ function switchPlayer()
 }
 
 # check for winning move
-function playWinMove()
+function playWinOrBlockMove()
 {
 	# invoke resetValue
    resetValue
