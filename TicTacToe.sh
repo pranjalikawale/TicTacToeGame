@@ -118,8 +118,7 @@ function input()
                playWinOrBlockMove $HUMAN
 					if [[ $noMatch -eq 1 ]]
       	      then 
-						row="$(getInput)"
-            		col="$(getInput)"
+						computerReadValue
 					fi
 				fi
 			fi
@@ -135,7 +134,7 @@ function input()
    done
 }
 
-# computer read
+# computer read row and col
 function computerReadValue()
 {
    if [ $cornerCounter -lt 4 ]
@@ -146,10 +145,10 @@ function computerReadValue()
    then
       row=1
       col=1
+   elif [ $sideCounter -lt 4 ]
+   then
+      side
 	fi
-   #elif [ $sideCounter -lt 4 ]
-   #then
-   #   side
    return
 }
 
@@ -174,12 +173,12 @@ function counters()
    elif [[ (( $row -eq 1)) && (($col -eq 1)) ]]
    then
       ((middleCounter++))
-   fi 
-	#elif [[ $sum -eq 1 || $sum -eq 3 ]]
-   #then
-   #   ((sideCounter++))
-
+	elif [[ $sum -eq 1 || $sum -eq 3 ]]
+   then
+      ((sideCounter++))
+	fi
 }
+
 # get random input for row and col for computer
 function getInput()
 {
