@@ -103,13 +103,24 @@ function input()
          read -p "Enter the column from 1-3" col
          ((row--))
          ((col--))
-      else
-			row="$(getInput)"
-   		col="$(getInput)"
+      else 
+			if [[ $counter -lt 5 || (( (($counter -ge 5)) && (($noMatch -eq 1)) )) ]]
+         then
+				row="$(getInput)"
+   			col="$(getInput)" 
+			else
+            playWinMove $COMPUTER
+				if [[ $noMatch -eq 1 ]]
+            then 
+					row="$(getInput)"
+            	col="$(getInput)"
+				fi
+			fi
       fi
       valid
       if [[ (($isvalid -eq 1)) ]]
       then
+			noMatch=0
          insert $playing
          break
       fi
@@ -224,6 +235,126 @@ function switchPlayer()
    fi
 }
 
+# check for winning move
+function playWinMove()
+{
+	# invoke resetValue
+   resetValue
+
+   for ((i=0;i<3;i++))
+   do
+      for ((k=0;k<2;k++))
+      do
+         for ((j=(($k+1));j<=2;j++))
+         do
+				# check for row chances to win
+            if [[ ${board[$i,$k]} == ${board[$i,$j]} && ${board[$i,$k]} == ${player[$1]} ]]
+            then
+               rowFlag=1
+            else
+               if  [[ ${board[$i,$k]} == " " ]]
+               then
+                  rowSpace=1
+                  emptySpaceInRowX=$i
+                  emptySpaceInRowY=$k
+               elif [[ ${board[$i,$j]} == " " ]]
+               then
+                  rowSpace=1
+                  emptySpaceInRowX=$i
+                  emptySpaceInRowY=$j
+               fi
+            fi
+
+				# check for col chances to win
+            if [[ ${board[$k,$i]} == ${board[$j,$i]} && ${board[$k,$i]} == ${player[$1]} ]]
+            then
+               colFlag=1
+            else
+               if  [[ ${board[$k,$i]} == " " ]]
+               then
+                  colSpace=1
+                  emptySpaceInColX=$k
+                  emptySpaceInColY=$i
+					elif [[ ${board[$j,$i]} == " " ]]
+               then
+                  colSpace=1
+                  emptySpaceInColX=$j
+                  emptySpaceInColY=$i
+               fi
+            fi
+         done
+			
+			# set the row chances value
+         if [[ (( $space -eq 1 )) && (( $rowFlag -eq 1 )) ]]
+         then
+            row=$emptySpaceInRowX
+            col=$emptySpaceInRowY
+            return
+         fi
+			
+			# set the col chances value
+         if [[ (( $colSpace -eq 1 )) && (( $colFlag -eq 1 )) ]]
+         then
+            row=$emptySpaceInColX
+            col=$emptySpaceInColY
+            return
+         fi
+
+      done
+      resetValue
+   done
+	
+	# check diagonal 2 for winning chances
+   if [[ ${board[0,0]} == ${board[1,1]} && ${board[1,1]} == ${player[$1]} && (( ${board[2,2]} == " " )) ]]
+   then
+      row=2
+      col=2
+      return
+   elif [[ ${board[1,1]} == ${board[2,2]} && ${board[1,1]} == ${player[$1]} && (( ${board[0,0]} == " " )) ]]
+   then
+      row=0
+      col=0
+      return
+   elif [[ ${board[0,0]} == ${board[2,2]} && ${board[0,0]} == ${player[$1]} && (( ${board[1,1]} == " " )) ]]
+   then
+      row=1
+      col=1
+      return
+   fi
+	
+	# check diagonal 2 for winning chances 
+   if [[ ${board[0,2]} == ${board[1,1]} && ${board[1,1]} == ${player[$1]} && (( ${board[2,1]} == " " )) ]]
+   then
+      row=2
+      col=1
+      return
+   elif [[ ${board[1,1]} == ${board[2,1]} && ${board[1,1]} == ${player[$1]} && (( ${board[0,2]} == " " )) ]]
+   then
+      row=0
+      col=2
+      return
+   elif [[ ${board[0,2]} == ${board[2,1]} && ${board[0,2]} == ${player[$1]} && (( ${board[1,1]} == " " )) ]]
+   then
+      row=1
+      col=1
+      return
+   fi
+
+   noMatch=1
+}
+
+# reset the value
+function resetValue()
+{
+   rowFlag=0
+   colFlag=0
+   rowSpace=0
+   colSpace=0
+   emptySpaceInRowX=-1
+   emptySpaceInRowY=-1
+   emptySpaceInColX=-1
+   emptySpaceInColY=-1
+}
 
 # ticTacToc main function
 function ticTacToe()
