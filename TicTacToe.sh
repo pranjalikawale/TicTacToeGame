@@ -15,6 +15,9 @@ row=-1
 col=-1
 isvalid=1
 gameOn=1
+cornerCounter=0
+middleCounter=0
+sideCounter=0
 
 # initialize board
 function board()
@@ -106,8 +109,7 @@ function input()
       else 
 			if [[ $counter -lt 5 || (( (($counter -ge 5)) && (($noMatch -eq 1)) )) ]]
          then
-				row="$(getInput)"
-   			col="$(getInput)" 
+				computerReadValue 
 			else
             playWinOrBlockMove $COMPUTER 
 				if [[ $noMatch -eq 1 ]]
@@ -127,11 +129,57 @@ function input()
       then
 			noMatch=0
          insert $playing
+			counters
          break
       fi
    done
 }
 
+# computer read
+function computerReadValue()
+{
+   if [ $cornerCounter -lt 4 ]
+   then
+      row=$(corner)
+      col=$(corner)
+	fi
+   #elif [ $middleCounter -lt 1 ]
+   #then
+   #   row=1
+   #   col=1
+   #elif [ $sideCounter -lt 4 ]
+   #then
+   #   side
+   return
+}
+
+# return corner
+function corner()
+{
+   if [[ "$(getRandom)" -eq 0  ]]
+   then
+      echo "0"
+   else
+      echo "2"
+   fi
+}
+
+# return count
+function counters()
+{
+   #sum=($row+$col)
+   if [[ (( $row -eq 0 || $row -eq 2 )) && (( $col -eq 0 && $col -eq 2 )) ]]
+   then
+      ((cornerCounter++))
+ 	fi
+	#elif [[ $sum -eq 1 || $sum -eq 3 ]]
+   #then
+   #   ((sideCounter++))
+   #elif [[ (( $row -eq 1)) && (($col -eq 1)) ]]
+   #then
+   #   ((middleCounter++))
+   #fi
+}
 # get random input for row and col for computer
 function getInput()
 {
