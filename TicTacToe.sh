@@ -9,7 +9,7 @@ COMPUTER="Computer"
 # variable
 declare -A board
 declare -A player=([$HUMAN]=O [$COMPUTER]=O)
-
+playing=" "
 # initialize board
 function board()
 {
@@ -72,6 +72,20 @@ function displaySymbol()
    done
 }
 
+# find who play first
+function playFirst()
+{
+   if [[ "$(getRandom)" -eq 0 ]]
+   then
+      playing=$HUMAN
+   else
+      playing=$COMPUTER
+   fi
+   echo "$playing(${player[$playing]}) win toss & play first"
+}
+
+
+
 # ticTacToc main function
 function ticTacToe()
 {
@@ -79,6 +93,7 @@ function ticTacToe()
 	display
 	assignSymbol
 	displaySymbol
+	playFirst
 }
 
 # invoke ticTacToe
