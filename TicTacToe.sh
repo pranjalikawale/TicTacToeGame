@@ -10,10 +10,10 @@ COMPUTER="Computer"
 declare -A board
 declare -A player=([$HUMAN]=O [$COMPUTER]=O)
 playing=" "
-counter=1
+counter=0
 row=-1
 col=-1
-isvalid=1
+isvalid=0
 gameOn=1
 cornerCounter=0
 middleCounter=0
@@ -106,7 +106,7 @@ function input()
 			((row--))
 			((col--))
 		else 
-			if [[ $counter -lt 5 || (( (($counter -ge 5)) && (($noMatch -eq 1)) )) ]]
+			if [[ $counter -lt 2 || $noMatch -eq 1 ]]
 			then
 				computerReadValue 
 			else
@@ -125,9 +125,9 @@ function input()
 		valid
 		if [[ (($isvalid -eq 1)) ]]
 		then
+			counters
 			noMatch=0
 			insert $playing
-			counters
 			break
 		fi
 	done
@@ -181,13 +181,13 @@ function side()
 function counters()
 {
 	sum=($row+$col)
-	if [[ (( $row -eq 0 || $row -eq 2 )) && (( $col -eq 0 && $col -eq 2 )) ]]
+	if [[ (( $row -eq 0 || $row -eq 2 )) && (( $col -eq 0 || $col -eq 2 )) ]]
 	then
 		((cornerCounter++))
 	elif [[ (( $row -eq 1)) && (($col -eq 1)) ]]
 	then
 		((middleCounter++))
-	elif [[ $sum -eq 1 || $sum -eq 3 ]]
+	elif [[ (($sum -eq 1)) || (($sum -eq 3)) ]]
 	then
 		((sideCounter++))
 	fi
@@ -244,7 +244,7 @@ function win()
 	# check row for winning condition
 	for ((rows=0;rows<$ROW;rows++))
 	do
-		if [[ ${board[$rows,0]} == ${board[$rows,1]} && ${board[$rows,1]} == ${board[$rows,2]} && (( ${board[$rows,0]} != " "   )) ]]
+		if [[ ${board[$rows,0]} == ${board[$rows,1]} && ${board[$rows,1]} == ${board[$rows,2]} && (( ${board[$rows,0]} != " " )) ]]
 		then
 			echo "Player $playing (${board[$rows,0]}) is won!!!!"
 			gameOn=0
@@ -269,7 +269,7 @@ function win()
 	fi
 
 	# check diagonal 2 for winning condition
-	if [[ ${board[1,2]} == ${board[1,1]} && ${board[1,1]} == ${board[2,1]} && (( ${board[1,1]} != " " )) ]]
+	if [[ ${board[0,2]} == ${board[1,1]} && ${board[1,1]} == ${board[2,0]} && (( ${board[1,1]} != " " )) ]]
 	then
 		echo "Player $playing (${board[1,1]}) is won!!!!"
 		gameOn=0
@@ -279,7 +279,7 @@ function win()
 # check for tie
 function tie()
 {
-	if [[ counter -gt 10 ]]
+	if [[ $counter -ge 9 ]]
 	then
 		echo "*******GAME TIE*******"
 		gameOn=0
@@ -307,7 +307,6 @@ function playWinOrBlockMove()
 {
 	# invoke resetValue
 	resetValue
-
 	for ((i=0;i<3;i++))
 	do
 		for ((k=0;k<2;k++))
@@ -352,7 +351,7 @@ function playWinOrBlockMove()
 			done
 
 			# set the row chances value
-			if [[ (( $space -eq 1 )) && (( $rowFlag -eq 1 )) ]]
+			if [[ (( $rowspace -eq 1 )) && (( $rowFlag -eq 1 )) ]]
 			then
 				row=$emptySpaceInRowX
 				col=$emptySpaceInRowY
@@ -390,17 +389,17 @@ function playWinOrBlockMove()
 	fi
 
 	# check diagonal 2 for winning chances
-	if [[ ${board[0,2]} == ${board[1,1]} && ${board[1,1]} == ${player[$1]} && (( ${board[2,1]} == " " )) ]]
+	if [[ ${board[0,2]} == ${board[1,1]} && ${board[1,1]} == ${player[$1]} && (( ${board[2,0]} == " " )) ]]
 	then
 		row=2
 		col=1
 		return
-	elif [[ ${board[1,1]} == ${board[2,1]} && ${board[1,1]} == ${player[$1]} && (( ${board[0,2]} == " " )) ]]
+	elif [[ ${board[1,1]} == ${board[2,0]} && ${board[1,1]} == ${player[$1]} && (( ${board[0,2]} == " " )) ]]
 	then
 		row=0
 		col=2
 		return
-	elif [[ ${board[0,2]} == ${board[2,1]} && ${board[0,2]} == ${player[$1]} && (( ${board[1,1]} == " " )) ]]
+	elif [[ ${board[0,2]} == ${board[2,0]} && ${board[0,2]} == ${player[$1]} && (( ${board[1,1]} == " " )) ]]
 	then
 		row=1
 		col=1
